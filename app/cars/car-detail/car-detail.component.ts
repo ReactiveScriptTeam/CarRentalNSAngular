@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { PageRoute, RouterExtensions } from "nativescript-angular/router";
 import { switchMap } from "rxjs/operators";
 
@@ -16,32 +17,19 @@ import { CarService } from "../shared/car.service";
     templateUrl: "./car-detail.component.html"
 })
 export class CarDetailComponent implements OnInit {
-    private _car: Car;
+    car: Car;
 
     constructor(
-        private _carService: CarService,
-        private _pageRoute: PageRoute,
-        private _routerExtensions: RouterExtensions
+        private service: CarService,
+        private route: ActivatedRoute,
+        private router: RouterExtensions
     ) { }
 
     ngOnInit(): void {
-        this._pageRoute.activatedRoute
-            .pipe(switchMap((activatedRoute) => activatedRoute.params))
-            .forEach((params) => {
-                const carId = params.id;
-
-                this._car = this._carService.getCarById(carId);
-            });
+        this.car = this.service.getCarById(this.route.snapshot.params["id"])
     }
 
-    get car(): Car {
-        return this._car;
-    }
-
-    /* ***********************************************************
-    * The back button is essential for a master-detail feature.
-    *************************************************************/
     onBackButtonTap(): void {
-        this._routerExtensions.backToPreviousPage();
+        this.router.backToPreviousPage();
     }
 }
